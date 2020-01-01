@@ -274,7 +274,14 @@ impl<'a> Verb<'a> {
                 ENDINGS[pronoun]
             }
             Adverb => &["-"],
-            Infinitive => &["-அ"],
+            Infinitive => {
+                match self.category {
+                    0 => &["-ய"],
+                    1 => &["-ல"],
+                    2 => &["-ள"],
+                    _ => &["-அ"],
+                }
+            }
         }
     }
 
