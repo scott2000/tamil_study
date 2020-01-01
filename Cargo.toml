@@ -1,0 +1,8 @@
+[package]
+name = "tamil_study"
+version = "0.1.0"
+authors = ["Scott Taylor <taylo840@purdue.edu>"]
+edition = "2018"
+
+[dependencies]
+rand = "0.7.2"

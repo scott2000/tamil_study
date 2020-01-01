@@ -1,0 +1,53 @@
+=== VERB LIST ===
+= Format: tamil; english [, alternates]; definition; category [; past: ?, adv: ?, stem: ?, inf: ?]
+
+= 1a =
+செய்; do; 1a
+= 1b =
+சொல்; tell, say; 1b; past: சொன்ன், adv: சொல்லி
+= 1c =
+கொள்; have; 1c
+புரிந்துகொள்; understand; 1c
+
+= 2 =
+உட்கார்; sit; 2
+வா; come; 2; past: வந்த், stem: வரு
+
+= 3 =
+வாங்கு; buy; 3
+ஊட்டு; feed; 3
+ஓடு; run; 3
+கழுவு; wash; 3
+தள்ளு; push; 3
+தூங்கு; sleep; 3
+பாடு; sing; 3
+பேசு; speak; 3
+போ; go; 3; past: போன், adv: போய், inf: -க்
+விளையாடு; play; 3
+வெட்டு; cut; 3
+
+= 4a =
+சாப்பிடு; eat; 4a
+கூப்பிடு; call; 4a
+= 4b =
+பெறு; get; 4b
+
+= 5 =
+கேள்; ask, hear; 5; past: கேட்ட், stem: கேட், inf: -க்
+நில்; stand; 5; past: நின்ற், stem: நிற், inf: -க்
+
+= 6 =
+பார்; look, see; 6
+இழு; pull; 6
+கடி; bite; 6
+குடி; drink; 6
+குதி; jump; 6
+குளி; take a bath; 6
+கொடு; give; 6
+படி; read, study; 6
+படு; lie down; 6
+
+= 7 =
+இரு; be, stay; 7
+எழுந்திரு; wake up, get up; 7
+நட; walk; 7
