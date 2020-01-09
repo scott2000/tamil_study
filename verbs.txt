@@ -1,19 +1,23 @@
 === VERB LIST ===
-= Format: tamil; english [, alternates]; definition; category [; past: ?, adv: ?, stem: ?, inf: ?]
+= Format: tamil; english [, ...]; definition; category [; past: ?, adv: ?, stem: ?, inf: ?]
 
-= 1a =
+= 1a =  -த்-   			pattern: short letter followed by -ய்
 செய்; do; 1a
-= 1b =
+= 1b =   ன்ற்-			pattern: short letter followed by -ல்
+கொல்; kill; 1b
+செல்; go; 1b
 சொல்; tell, say; 1b; past: சொன்ன், adv: சொல்லி
-= 1c =
+= 1c =   ண்ட்-			pattern: short letter followed by -ள்
 கொள்; have; 1c
 புரிந்துகொள்; understand; 1c
 
-= 2 =
+= 2 =   -ந்த்- 			pattern: வா, ending -ரி, longer word ending -ய், -ர், -ழ், -இ, or -ஐ
 உட்கார்; sit; 2
+தெரி; be known; 2
+புரி; be understood, perform; 2
 வா; come; 2; past: வந்த், stem: வரு
 
-= 3 =
+= 3 =   -இன்-			pattern: longer word ending -உ, but not -டு or -று
 வாங்கு; buy; 3
 ஊட்டு; feed; 3
 ஓடு; run; 3
@@ -21,33 +25,35 @@
 தள்ளு; push; 3
 தூங்கு; sleep; 3
 பாடு; sing; 3
-பேசு; speak; 3
+பேசு; speak, say; 3
 போ; go; 3; past: போன், adv: போய், inf: -க்
 விளையாடு; play; 3
 வெட்டு; cut; 3
+வேண்டு; request, be wanted; 3
 
-= 4a =
+= 4a =   ட்ட்- 			pattern: longer word ending -டு
 சாப்பிடு; eat; 4a
 கூப்பிடு; call; 4a
-= 4b =
+= 4b =   ற்ற்- 			pattern: word ending -று
 பெறு; get; 4b
 
-= 5 =
+= 5 =   [irregular]  	note: use -ப்- for future
 கேள்; ask, hear; 5; past: கேட்ட், stem: கேட், inf: -க்
 நில்; stand; 5; past: நின்ற், stem: நிற், inf: -க்
 
-= 6 =
+= 6 =   -த்த்-	(weak)  pattern: பார் or short letter followed by consonant and -இ or -உ (but not -று or -ரி)
 பார்; look, see; 6
 இழு; pull; 6
 கடி; bite; 6
 குடி; drink; 6
 குதி; jump; 6
-குளி; take a bath; 6
+குளி; take a bath, take a shower; 6
 கொடு; give; 6
 படி; read, study; 6
 படு; lie down; 6
+பிடி; hold, catch, be liked; 6
 
-= 7 =
-இரு; be, stay; 7
+= 7 =   -ந்த்-	(weak)  pattern: இரு or -அ
+இரு; be, stay, exist; 7
 எழுந்திரு; wake up, get up; 7
 நட; walk; 7

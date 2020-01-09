@@ -129,8 +129,8 @@ impl Display for Conjugation {
 #[derive(Clone, Ord, PartialOrd, Eq, PartialEq, Debug)]
 struct Verb<'a> {
     tamil: &'a str,
-    english: Vec<&'a str>,
     category: usize,
+    english: Vec<&'a str>,
     past: Option<&'a str>,
     stem: Option<&'a str>,
     adv: Option<&'a str>,
@@ -300,6 +300,10 @@ impl<'a> Verb<'a> {
         }
     }
 
+    fn is_ever_irregular(&self) -> bool {
+        self.past.is_some() || self.adv.is_some() || self.stem.is_some() || self.inf.is_some()
+    }
+
     fn from_line(s: &str) -> Option<Verb> {
         let mut iter = s.split(';');
         let tamil = iter.next()?.trim();
@@ -319,8 +323,8 @@ impl<'a> Verb<'a> {
         }
         let verb = Verb {
             tamil,
-            english,
             category: CATEGORIES.iter().position(|&cat| cat == category)?,
+            english,
             past: map.remove("past"),
             stem: map.remove("stem"),
             adv: map.remove("adv"),
@@ -421,6 +425,7 @@ fn main() -> io::Result<()> {
             println!("0. Exit");
             println!("1. Study");
             println!("2. Look up a word");
+            println!("3. List words in dictionary");
             print!("> ");
             stdout.flush()?;
             let mut response = String::new();
@@ -434,6 +439,23 @@ fn main() -> io::Result<()> {
                     0 => return Ok(()),
                     1 => break true,
                     2 => break false,
+                    3 => {
+                        println!("{:=>60}", " DICTIONARY");
+                        for verb in verbs.iter() {
+                            let irregular = if verb.is_ever_irregular() {
+                                "irregular, "
+                            } else {
+                                ""
+                            };
+                            println!(
+                                "{}: {} [{}#{}]",
+                                verb.tamil,
+                                verb.all_english(),
+                                irregular,
+                                CATEGORIES[verb.category],
+                            );
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -452,8 +474,15 @@ fn main() -> io::Result<()> {
                 'verb_loop: for verb in current {
                     let conj = rng.sample(Standard);
                     let english = verb.pick_english(&mut rng);
+                    let mut disambiguation = String::new();
+                    for other in verbs.iter() {
+                        if other.tamil != verb.tamil && other.english.contains(&english) {
+                            disambiguation = format!(" ({})", verb.tamil);
+                            break;
+                        }
+                    }
                     println!("{:=>60}", format!(" [{}/{}]", correct, total));
-                    println!("Conjugate \"{}\" {}", english, conj);
+                    println!("Conjugate \"{}\"{} {}", english, disambiguation, conj);
                     print!("> ");
                     stdout.flush()?;
                     let mut response = String::new();
@@ -528,86 +557,98 @@ fn main() -> io::Result<()> {
                 if code == 0 || word.is_empty() || word == "." {
                     continue 'main_loop;
                 }
-                for verb in verbs.iter() {
-                    if !verb.english.contains(&word) && word != verb.tamil {
-                        continue;
+                let mut candidates = verbs.iter()
+                    .filter(|verb| word == verb.tamil || verb.english.contains(&word))
+                    .collect::<Vec<_>>();
+                match candidates.as_slice() {
+                    &[] => {
+                        println!("{}", SEPARATOR);
+                        println!("Could not find English or Tamil word: {}", word);
                     }
-                    let english = verb.all_english();
-                    let mut uppercase = english.to_ascii_uppercase();
-                    uppercase.insert(0, ' ');
-                    println!("{:=>60}", uppercase);
-                    println!("{:<30}Tamil: {}", format!("English: {}", english), verb.tamil);
-                    let irregular = if verb.past.is_some() || verb.adv.is_some() || verb.stem.is_some() || verb.inf.is_some() {
-                        " [irregular]"
-                    } else {
-                        ""
-                    };
-                    println!("                              Category: #{}{}", CATEGORIES[verb.category], irregular);
-                    println!("Enter a conjugation to print: (type '.' to exit)");
-                    loop {
-                        print!("> ");
-                        stdout.flush()?;
-                        let mut response = String::new();
-                        let code = stdin.read_line(&mut response)?;
-                        let conjugation = response.trim();
-                        if code == 0 || conjugation.is_empty() || conjugation == "." {
-                            continue 'lookup;
-                        }
-                        let mut parts = conjugation.split_ascii_whitespace();
-                        let kind = parts.next().unwrap().to_ascii_lowercase();
-                        let conj = if kind.starts_with('a') {
-                            Conjugation::Adverb
-                        } else if kind.starts_with('i') {
-                            Conjugation::Infinitive
+                    &[verb] => {
+                        let english = verb.all_english();
+                        let mut uppercase = english.to_ascii_uppercase();
+                        uppercase.insert(0, ' ');
+                        println!("{:=>60}", uppercase);
+                        println!("{:<35}Tamil: {}", format!("English: {}", english), verb.tamil);
+                        let irregular = if verb.is_ever_irregular() {
+                            " [irregular]"
                         } else {
-                            let tense = if kind.starts_with("pa") {
-                                Tense::Past
-                            } else if kind.starts_with("pr") {
-                                Tense::Present
-                            } else if kind.starts_with('f') {
-                                Tense::Future
-                            } else {
-                                println!("Invalid tense: {}", kind);
-                                continue
-                            };
-                            let pronoun = if let Some(pronoun) = parts.next() {
-                                if let Some(index) = PRONOUNS.iter().position(|&s| s == pronoun) {
-                                    index
-                                } else {
-                                    println!("Invalid subject: {}", pronoun);
-                                    continue
-                                }
-                            } else {
-                                println!("No subject given, defaulting to {}...", PRONOUNS[7]);
-                                7
-                            };
-                            Conjugation::Tense {
-                                tense,
-                                pronoun,
-                            }
+                            ""
                         };
-                        let mut base = String::from(verb.base(&conj));
-                        suffix(&mut base, verb.middle(&conj));
-                        let endings = verb.endings(&conj);
-                        for (i, ending) in endings.iter().enumerate() {
-                            let mut conjugated = base.clone();
-                            suffix(&mut conjugated, ending);
-                            let (arrow, note) = if i == 0 {
-                                let note = if endings.len() == 1 {
-                                    ""
-                                } else {
-                                    " (most common)"
-                                };
-                                ("=>", note)
+                        println!("                                   Category: #{}{}", CATEGORIES[verb.category], irregular);
+                        println!("Enter a conjugation to print: (type '.' to exit)");
+                        loop {
+                            print!("> ");
+                            stdout.flush()?;
+                            let mut response = String::new();
+                            let code = stdin.read_line(&mut response)?;
+                            let conjugation = response.trim();
+                            if code == 0 || conjugation.is_empty() || conjugation == "." {
+                                continue 'lookup;
+                            }
+                            let mut parts = conjugation.split_ascii_whitespace();
+                            let kind = parts.next().unwrap().to_ascii_lowercase();
+                            let conj = if kind.starts_with('a') {
+                                Conjugation::Adverb
+                            } else if kind.starts_with('i') {
+                                Conjugation::Infinitive
                             } else {
-                                ("  ", "")
+                                let tense = if kind.starts_with("pa") {
+                                    Tense::Past
+                                } else if kind.starts_with("pr") {
+                                    Tense::Present
+                                } else if kind.starts_with('f') {
+                                    Tense::Future
+                                } else {
+                                    println!("Invalid tense: {}", kind);
+                                    continue
+                                };
+                                let pronoun = if let Some(pronoun) = parts.next() {
+                                    if let Some(index) = PRONOUNS.iter().position(|&s| s == pronoun) {
+                                        index
+                                    } else {
+                                        println!("Invalid subject: {}", pronoun);
+                                        continue
+                                    }
+                                } else {
+                                    println!("No subject given, defaulting to {}...", PRONOUNS[7]);
+                                    7
+                                };
+                                Conjugation::Tense {
+                                    tense,
+                                    pronoun,
+                                }
                             };
-                            println!("{} {}{}", arrow, conjugated, note);
+                            let mut base = String::from(verb.base(&conj));
+                            suffix(&mut base, verb.middle(&conj));
+                            let endings = verb.endings(&conj);
+                            for (i, ending) in endings.iter().enumerate() {
+                                let mut conjugated = base.clone();
+                                suffix(&mut conjugated, ending);
+                                let (arrow, note) = if i == 0 {
+                                    let note = if endings.len() == 1 {
+                                        ""
+                                    } else {
+                                        " (most common)"
+                                    };
+                                    ("=>", note)
+                                } else {
+                                    ("  ", "")
+                                };
+                                println!("{} {}{}", arrow, conjugated, note);
+                            }
+                        }
+                    }
+                    _ => {
+                        println!("{}", SEPARATOR);
+                        println!("English word \"{}\" could refer to multiple entries:", word);
+                        candidates.sort_unstable();
+                        for candidate in candidates {
+                            println!("  - {}: {}", candidate.tamil, candidate.all_english());
                         }
                     }
                 }
-                println!("{}", SEPARATOR);
-                println!("Could not find English or Tamil word: {}", word);
             }
         }
     }
