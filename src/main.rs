@@ -573,8 +573,9 @@ fn main() -> io::Result<()> {
                 if code == 0 || word.is_empty() || word == "." {
                     continue 'main_loop;
                 }
+                let word = word.to_ascii_lowercase();
                 let mut candidates = verbs.iter()
-                    .filter(|verb| word == verb.tamil || verb.english.contains(&word))
+                    .filter(|verb| &word == verb.tamil || verb.english.contains(&word.as_str()))
                     .collect::<Vec<_>>();
                 match candidates.as_slice() {
                     &[] => {
@@ -603,8 +604,9 @@ fn main() -> io::Result<()> {
                             if code == 0 || conjugation.is_empty() || conjugation == "." {
                                 continue 'lookup;
                             }
+                            let conjugation = conjugation.to_ascii_lowercase();
                             let mut parts = conjugation.split_ascii_whitespace();
-                            let kind = parts.next().unwrap().to_ascii_lowercase();
+                            let kind = parts.next().unwrap();
                             let conj = if kind.starts_with('a') {
                                 Conjugation::Adverb
                             } else if kind.starts_with('i') {
