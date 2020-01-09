@@ -20,6 +20,22 @@ const PRONOUNS: &[&str] = &[
     "அவர்கள்",
 ];
 
+const PRONOUNS_ENGLISH: &[&[&str]] = &[
+    &["adhu", "athu", "adu", "atu"],
+    &["avai"],
+
+    &["naan", "nan"],
+    &["naangal", "nangal"],
+    &["naam", "nam"],
+    &["nee", "nii", "ni"],
+    &["neengal", "niingal", "ningal"],
+
+    &["avan"],
+    &["aval"],
+    &["avar"],
+    &["avarkal"],
+];
+
 const CATEGORIES: &[&str] = &[
     "1a", // 0
     "1b", // 1
@@ -594,10 +610,10 @@ fn main() -> io::Result<()> {
                             } else if kind.starts_with('i') {
                                 Conjugation::Infinitive
                             } else {
-                                let tense = if kind.starts_with("pa") {
-                                    Tense::Past
-                                } else if kind.starts_with("pr") {
+                                let tense = if kind.starts_with("pr") {
                                     Tense::Present
+                                } else if kind.starts_with('p') {
+                                    Tense::Past
                                 } else if kind.starts_with('f') {
                                     Tense::Future
                                 } else {
@@ -607,12 +623,15 @@ fn main() -> io::Result<()> {
                                 let pronoun = if let Some(pronoun) = parts.next() {
                                     if let Some(index) = PRONOUNS.iter().position(|&s| s == pronoun) {
                                         index
+                                    } else if let Some(index) = PRONOUNS_ENGLISH.iter()
+                                        .position(|s| s.contains(&pronoun))
+                                    {
+                                        index
                                     } else {
                                         println!("Invalid subject: {}", pronoun);
                                         continue
                                     }
                                 } else {
-                                    println!("No subject given, defaulting to {}...", PRONOUNS[7]);
                                     7
                                 };
                                 Conjugation::Tense {
@@ -620,6 +639,7 @@ fn main() -> io::Result<()> {
                                     pronoun,
                                 }
                             };
+                            println!("Conjugating {}:", conj);
                             let mut base = String::from(verb.base(&conj));
                             suffix(&mut base, verb.middle(&conj));
                             let endings = verb.endings(&conj);
