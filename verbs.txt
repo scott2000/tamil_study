@@ -11,13 +11,13 @@
 கொள்; have; 1c
 புரிந்துகொள்; understand; 1c
 
-= 2 =   -ந்த்- 			pattern: வா, ending -ரி, longer word ending -ய், -ர், -ழ், -இ, or -ஐ
+= 2 =   -ந்த்- 			pattern: வா, ending -ரி, or longer word ending -ய், -ர், -ழ், -இ, or -ஐ
 உட்கார்; sit; 2
 தெரி; be known; 2
 புரி; be understood, perform; 2
 வா; come; 2; past: வந்த், stem: வரு
 
-= 3 =   -இன்-			pattern: longer word ending -உ, but not -டு or -று
+= 3 =   -இன்-			pattern: போ or longer word ending -உ, but not -டு or -று
 வாங்கு; buy; 3
 ஊட்டு; feed; 3
 ஓடு; run; 3
