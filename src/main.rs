@@ -432,6 +432,7 @@ fn main() -> io::Result<()> {
             eprintln!("cannot read line: {}", trimmed);
         }
     }
+    verbs.sort_unstable();
     let stdin = io::stdin();
     let mut stdout = io::stdout();
     'main_loop: loop {
@@ -457,6 +458,7 @@ fn main() -> io::Result<()> {
                     2 => break false,
                     3 => {
                         println!("{:=>60}", " DICTIONARY");
+                        println!("Listing {} verbs in sorted order:", verbs.len());
                         for verb in verbs.iter() {
                             let irregular = if verb.is_ever_irregular() {
                                 "irregular, "
@@ -464,7 +466,7 @@ fn main() -> io::Result<()> {
                                 ""
                             };
                             println!(
-                                "{}: {} [{}#{}]",
+                                "  - {}: {} [{}#{}]",
                                 verb.tamil,
                                 verb.all_english(),
                                 irregular,
