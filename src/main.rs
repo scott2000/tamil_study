@@ -417,6 +417,7 @@ fn push_iter(base: &mut String, iter: impl Iterator<Item=char>) {
     }
 }
 
+// TODO: clean up code and refactor into multiple functions!
 fn main() -> io::Result<()> {
     const SEPARATOR: &str = "============================================================";
     let contents = fs::read_to_string("verbs.txt")?;
@@ -482,13 +483,19 @@ fn main() -> io::Result<()> {
             println!("{:=>60}", " STUDY");
             println!("Studying with {} verbs... (type '.' to exit)", verbs.len());
             let mut rng = rand::thread_rng();
-            verbs.shuffle(&mut rng);
-            let mut total = 0;
             let mut correct = 0;
-            let mut current = verbs.clone();
-            let mut missed = Vec::new();
+            const STUDY_GROUPING: usize = 10;
+            let mut queue = verbs.clone();
+            queue.shuffle(&mut rng);
+            let mut current = Vec::with_capacity(STUDY_GROUPING);
+            while let Some(elem) = queue.pop() {
+                current.push(elem);
+                if current.len() == STUDY_GROUPING {
+                    break;
+                }
+            }
+            let mut missed = Vec::with_capacity(STUDY_GROUPING);
             loop {
-                let count = current.len();
                 'verb_loop: for verb in current {
                     let conj = rng.sample(Standard);
                     let english = verb.pick_english(&mut rng);
@@ -499,7 +506,7 @@ fn main() -> io::Result<()> {
                             break;
                         }
                     }
-                    println!("{:=>60}", format!(" [{}/{}]", correct, total));
+                    println!("{:=>60}", format!(" [{}/{}]", correct, verbs.len()));
                     println!("Conjugate \"{}\"{} {}", english, disambiguation, conj);
                     print!("> ");
                     stdout.flush()?;
@@ -508,10 +515,9 @@ fn main() -> io::Result<()> {
                     let response = response.trim();
                     if code == 0 || response == "." {
                         println!("{}", SEPARATOR);
-                        println!("Stopping with {}/{} correct!", correct, total);
+                        println!("Stopping with {}/{} completed!", correct, verbs.len());
                         continue 'main_loop;
                     }
-                    total += 1;
                     let mut base = String::from(verb.base(&conj));
                     suffix(&mut base, verb.middle(&conj));
                     let endings = verb.endings(&conj);
@@ -554,13 +560,33 @@ fn main() -> io::Result<()> {
                     }
                 }
                 println!("{}", SEPARATOR);
-                if missed.is_empty() {
-                    println!("All {} verbs conjugated, restarting with new questions...", count);
-                    current = verbs.clone();
+                let missed_count = missed.len();
+                let reset = missed_count == 0 && queue.is_empty();
+                if reset {
+                    queue = verbs.clone();
+                    queue.shuffle(&mut rng);
+                    current = Vec::with_capacity(STUDY_GROUPING);
+                    correct = 0;
                 } else {
-                    println!("All {} verbs conjugated, reviewing {} missed verbs...", count, missed.len());
                     current = missed;
-                    missed = Vec::new();
+                    missed = Vec::with_capacity(STUDY_GROUPING);
+                }
+                while current.len() != STUDY_GROUPING {
+                    if let Some(elem) = queue.pop() {
+                        current.push(elem);
+                    } else {
+                        break;
+                    }
+                }
+                if reset {
+                    println!("All verbs {} conjugated! Restarting with shuffled verbs...", verbs.len());
+                } else {
+                    current.shuffle(&mut rng);
+                    if missed_count == 0 {
+                        println!("Round completed with no missed verbs!");
+                    } else {
+                        println!("Round completed with {} missed verbs...", missed_count);
+                    }
                 }
             }
         } else {
