@@ -40,7 +40,7 @@
 சாப்பிடு; eat; 4a
 கூப்பிடு; call; 4a
 போடு; put, drop; 4a
-விடு; leave; 4a
+விடு; release; 4a
 = 4b =   ற்ற்- 			pattern: word ending -று
 பெறு; get; 4b
 
